@@ -1,15 +1,17 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
 import './App.css'
 import { movies as initialMovies } from "./data/movies"
 
 function App() {
-  // 1. Состояние для списка фильмов (Критерий: useState)
   const [movieList, setMovieList] = useState(initialMovies);
 
-  // 2. Функция очистки (Критерий: кнопка работает)
+  // Функция для переключения чекбокса (Критерий: handleToggleWatched)
+  const handleToggleWatched = (id: number) => {
+    setMovieList(movieList.map(movie => 
+      movie.id === id ? { ...movie, watched: !movie.watched } : movie
+    ));
+  };
+
   const handleClear = () => {
     setMovieList([]);
   };
@@ -19,31 +21,45 @@ function App() {
       <h1>Кинотека</h1>
 
       <div style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '15px' }}>
-        {/* 3. Счётчик (Критерий: реализован счётчик) */}
         <div className="counter">
           Фильмов в списке: <strong>{movieList.length}</strong>
         </div>
         
         <button 
           onClick={handleClear}
-          style={{ 
-            padding: '8px 16px', 
-            cursor: 'pointer',
-            borderRadius: '4px',
-            border: '1px solid #ccc'
-          }}
+          style={{ padding: '8px 16px', cursor: 'pointer' }}
         >
           Очистить список
         </button>
       </div>
 
-      {/* 4. Вывод списка напрямую (Критерий: передача данных в интерфейс) */}
       <div style={{ textAlign: 'left' }}>
         {movieList.length > 0 ? (
           movieList.map(movie => (
-            <div key={movie.id} style={{ borderBottom: '1px solid #eee', padding: '10px 0' }}>
-              <h2 style={{ margin: '0 0 5px 0' }}>{movie.title} ({movie.year})</h2>
-              <p style={{ margin: 0, color: '#666' }}>{movie.description}</p>
+            <div key={movie.id} style={{ 
+              borderBottom: '1px solid #eee', 
+              padding: '10px 0',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center'
+            }}>
+              <div style={{ opacity: movie.watched ? 0.5 : 1 }}>
+                <h2 style={{ 
+                  margin: '0 0 5px 0', 
+                  textDecoration: movie.watched ? 'line-through' : 'none' 
+                }}>
+                  {movie.title} ({movie.year})
+                </h2>
+                <p style={{ margin: 0, color: '#666' }}>{movie.description}</p>
+              </div>
+
+              {/* Чекбокс (Критерий: Добавлен чекбокс) */}
+              <input 
+                type="checkbox" 
+                checked={movie.watched} 
+                onChange={() => handleToggleWatched(movie.id)}
+                style={{ width: '20px', height: '20px', cursor: 'pointer' }}
+              />
             </div>
           ))
         ) : (
